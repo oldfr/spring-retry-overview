@@ -21,8 +21,10 @@ public class MainController {
     private SecondService secondService;
 
     @GetMapping("testRetry")
-    public String testRetry() throws URISyntaxException, ConnectException {
+    public String testRetry() throws URISyntaxException, ConnectException, InterruptedException {
         String first = service.testAPIService();
+//        System.out.println(Thread.currentThread().getId());
+//        Thread.sleep(10000);
         System.out.println(first);
         return first;
     }

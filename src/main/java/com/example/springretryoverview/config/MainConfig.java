@@ -1,5 +1,6 @@
 package com.example.springretryoverview.config;
 
+import com.example.springretryoverview.listener.DefaultListenerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.support.RetryTemplate;
@@ -16,10 +17,13 @@ public class MainConfig {
 
     @Bean
     public RetryTemplate getRetryTemplate() {
-        return RetryTemplate.builder()
+        RetryTemplate template =  RetryTemplate.builder()
                 .maxAttempts(2)
                 .fixedBackoff(1000)
                 .retryOn(ResourceAccessException.class)
+//                .withListener(new DefaultListenerSupport())
                 .build();
+        template.registerListener(new DefaultListenerSupport());
+        return template;
     }
 }
