@@ -2,6 +2,8 @@ package com.example.springretryoverview.controller;
 
 import com.example.springretryoverview.service.MainService;
 import com.example.springretryoverview.service.SecondService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,8 @@ import java.net.URISyntaxException;
 @RequestMapping("/")
 public class MainController {
 
+    Logger logger = LoggerFactory.getLogger(MainController.class);
+
     @Autowired
     private MainService service;
 
@@ -23,16 +27,14 @@ public class MainController {
     @GetMapping("testRetry")
     public String testRetry() throws URISyntaxException, ConnectException, InterruptedException {
         String first = service.testAPIService();
-//        System.out.println(Thread.currentThread().getId());
-//        Thread.sleep(10000);
-        System.out.println(first);
+        logger.info(first);
         return first;
     }
 
     @GetMapping("testRetryWithTemplate")
     public String testRetryWithTemplate() throws URISyntaxException, ConnectException {
         String second = secondService.testAPIService("test1",0.1);
-        System.out.println(second);
+        logger.info(second);
         return second;
     }
 }

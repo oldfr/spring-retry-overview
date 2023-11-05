@@ -1,5 +1,7 @@
 package com.example.springretryoverview.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -19,18 +21,21 @@ import java.time.LocalDateTime;
 @Service
 public class MainService {
 
+    Logger logger = LoggerFactory.getLogger(MainService.class);
+
     @Autowired
     private RestTemplate restTemplate;
 
     /***
-     * retries 2 times (including first execution) with gap of 2 seconds between each retries. Calls recover method on 5th failure
+     * This method called 2 times (including first execution) with gap of 2000 milliseconds between each call.
+     * And, will call the recover method on 2nd failure
      * @throws URISyntaxException
      * @throws ConnectException
      */
     @Retryable(retryFor = {ConnectException.class, ArithmeticException.class, ResourceAccessException.class}, maxAttempts = 2, backoff = @Backoff(value = 2000))
     public String testAPIService() throws URISyntaxException, ConnectException {
         try {
-            System.out.println("Retry Number : " + RetrySynchronizationManager.getContext().getRetryCount()+" at time:"+ LocalDateTime.now());
+            logger.info("Retry Number : " + RetrySynchronizationManager.getContext().getRetryCount()+" at time:"+ LocalDateTime.now());
 //            int a = 8/0;
             RequestEntity<Object> request = new RequestEntity<>(HttpMethod.GET, new URI("http://localhost:8088/students"));
             restTemplate.exchange(request, String.class);
@@ -40,17 +45,17 @@ public class MainService {
             throw uex;
         }
         catch (ArithmeticException ax) {
-            System.out.println("ArithmeticException occurred");
+            logger.info("ArithmeticException occurred");
             throw ax;
         }*/
         catch (Exception ex) {
-            System.out.println("other exception occurred. "+ex.getMessage());
+            logger.info("other exception occurred. "+ex.getMessage());
             if(ex instanceof  ConnectException) {
-                System.out.println("throwing");
+                logger.info("throwing");
                 throw new ConnectException();
             }
             if(ex instanceof ResourceAccessException) {
-                System.out.println("throwing resourceAccessException");
+                logger.info("throwing resourceAccessException");
                 throw new ResourceAccessException(ex.getMessage());
             }
         }
@@ -59,19 +64,19 @@ public class MainService {
 
     @Recover
     public String recover(ConnectException e) throws URISyntaxException {
-        System.out.println("ConnectException recovered at:"+LocalDateTime.now());
+        logger.info("ConnectException recovered at:"+LocalDateTime.now());
         return "CouldNotCallAPI";
     }
 
     @Recover
     public String recover(ArithmeticException ex) {
-        System.out.println("ArithmeticException recovered at:"+LocalDateTime.now());
+        logger.info("ArithmeticException recovered at:"+LocalDateTime.now());
         return "CouldNotCallAPI";
     }
 
     @Recover
     public String recover(ResourceAccessException ex) {
-        System.out.println("ResourceAccessException recovered at:"+LocalDateTime.now());
+        logger.info("ResourceAccessException recovered at:"+LocalDateTime.now());
         return "CouldNotCallAPI";
     }
 

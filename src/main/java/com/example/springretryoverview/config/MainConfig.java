@@ -17,13 +17,11 @@ public class MainConfig {
 
     @Bean
     public RetryTemplate getRetryTemplate() {
-        RetryTemplate template =  RetryTemplate.builder()
-                .maxAttempts(2)
-                .fixedBackoff(1000)
-                .retryOn(ResourceAccessException.class)
-//                .withListener(new DefaultListenerSupport())
-                .build();
-        template.registerListener(new DefaultListenerSupport());
-        return template;
+        return RetryTemplate.builder()
+        .maxAttempts(2)
+        .fixedBackoff(1000)
+        .retryOn(ResourceAccessException.class)
+        .withListener(new DefaultListenerSupport())
+        .build();
     }
 }

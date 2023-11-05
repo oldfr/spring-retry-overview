@@ -1,5 +1,7 @@
 package com.example.springretryoverview.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -15,6 +17,8 @@ import java.time.LocalDateTime;
 @Service
 public class SecondService {
 
+    Logger logger = LoggerFactory.getLogger(SecondService.class);
+
     @Autowired
     RetryTemplate retryTemplate;
 
@@ -23,7 +27,7 @@ public class SecondService {
 
     public String testAPIService(String arg1, Double arg2) throws URISyntaxException, ConnectException {
         return retryTemplate.execute(ctx -> {
-            System.out.println("inside SecondService. Retrying count: "+ctx.getRetryCount()+" at time: "+ LocalDateTime.now());
+            logger.info("inside SecondService. Retrying count: "+ctx.getRetryCount()+" at time: "+ LocalDateTime.now());
             RequestEntity<Object> request = new RequestEntity<>(HttpMethod.GET, new URI("http://localhost:8088/students"));
             restTemplate.exchange(request, String.class);
             return "calledAPIInsideRetryTemplate";
