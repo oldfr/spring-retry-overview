@@ -24,6 +24,13 @@ public class MainController {
     @Autowired
     private SecondService secondService;
 
+    /***
+     * This is a method that include retry mechanism using Annotations
+     * @return
+     * @throws URISyntaxException
+     * @throws ConnectException
+     * @throws InterruptedException
+     */
     @GetMapping("testRetry")
     public String testRetry() throws URISyntaxException, ConnectException, InterruptedException {
         String first = service.testAPIService();
@@ -31,6 +38,12 @@ public class MainController {
         return first;
     }
 
+    /***
+     * This is a method that include retry mechanism using RetryTemplate
+     * @return
+     * @throws URISyntaxException
+     * @throws ConnectException
+     */
     @GetMapping("testRetryWithTemplate")
     public String testRetryWithTemplate() throws URISyntaxException, ConnectException {
         String second = secondService.testAPIService("test1",0.1);
